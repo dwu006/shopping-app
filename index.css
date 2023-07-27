@@ -1,0 +1,39 @@
+#submit{
+    margin-bottom: 15px;
+}
+
+.shopping-item {
+    background-color: #f2f2f2;
+    padding: 10px;
+    margin-bottom: 5px;
+  }
+  
+  .shopping-item-content {
+    display: flex;
+    align-items: center;
+  }
+  
+  .shopping-item-checkbox {
+    flex: 0 0 20px;
+    margin-right: 10px;
+  }
+  
+  .shopping-item-text {
+    flex: 1;
+  }
+  
+  .shopping-item-delete {
+    flex: 0 0 20px;
+    margin-left: 10px;
+    cursor: pointer;
+  }
+
+.shopping-item.checked {
+    background-color: #2e810e; 
+  }
+  
+  .shopping-item.checked .shopping-item-text {
+    text-decoration: line-through; 
+  }
+  
+  

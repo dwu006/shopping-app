@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shopping App</title>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="index.css">
+</head>
+<body>
+
+<div class="container mt-4">
+    <div class="form-group">
+        <label for="customContent">Enter Item Name:</label>
+        <input type="text" class="form-control" id="customContent" placeholder="Enter Item Name" required>
+        <label for="quantity">Enter Quantity:</label>
+        <input type="number" class="form-control" id="quantity" value="1" min="1" required>
+    </div>
+    <button id="submit" class="btn btn-primary" onclick="updateTabContent()">Add Item</button>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="tab-1-tab" data-toggle="tab" href="#tab-1" role="tab" aria-controls="tab-1" aria-selected="true" ondblclick="renameTab(this)">List 1</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="tab-1" role="tabpanel" aria-labelledby="tab-1-tab"></div>
+    </div>
+    <br>
+    <div class="mb-3">
+        <button class="btn btn-primary" onclick="addTab()">Add List</button>
+        <button class="btn btn-danger" onclick="deleteTab()">Delete List</button>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+let tabCount = 1;
+
+function addTab() {
+    tabCount++;
+    const tabId = 'tab-' + tabCount;
+
+    // Create the tab link
+    const tabLink = document.createElement('a');
+    tabLink.classList.add('nav-link');
+    tabLink.setAttribute('id', tabId + '-tab');
+    tabLink.setAttribute('data-toggle', 'tab');
+    tabLink.setAttribute('href', '#' + tabId);
+    tabLink.setAttribute('role', 'tab');
+    tabLink.setAttribute('aria-controls', tabId);
+    tabLink.setAttribute('aria-selected', 'false');
+    tabLink.setAttribute('ondblclick', 'renameTab(this)');
+    tabLink.innerText = 'List ' + tabCount;
+    
+    // Create the tab content placeholder
+    const tabContentDiv = document.createElement('div');
+    tabContentDiv.classList.add('tab-pane', 'fade');
+    tabContentDiv.setAttribute('id', tabId);
+    tabContentDiv.setAttribute('role', 'tabpanel');
+    tabContentDiv.setAttribute('aria-labelledby', tabId + '-tab');
+    
+    // Add the new tab link to the tabs container
+    const tabsContainer = document.getElementById('myTab');
+    tabsContainer.appendChild(createTabListItem(tabLink));
+    
+    // Add the tab content placeholder to the tab content container
+    const tabContentContainer = document.getElementById('myTabContent');
+    tabContentContainer.appendChild(tabContentDiv);
+    
+    // Append the "Delete Tab" button to the tab link
+    //tabLink.appendChild(deleteButton);
+    
+    // Activate the new tab
+    $('#' + tabId + '-tab').tab('show');
+}
+
+function createTabListItem(linkElement) {
+    const listItem = document.createElement('li');
+    listItem.classList.add('nav-item');
+    listItem.appendChild(linkElement);
+    return listItem;
+}
+
+function removeTab(tabId) {
+    const tabToRemove = document.getElementById(tabId);
+    if (tabToRemove) {
+        const tabLink = document.querySelector('a[href="#' + tabId + '"]');
+        const tabListItem = tabLink.parentNode;
+        tabListItem.remove();
+        tabToRemove.remove();
+        // Activate the first tab after removing the current tab
+        $('#myTab a:first-child').tab('show');
+    }
+}
+
+function updateTabContent() {
+    const customContent = document.getElementById('customContent').value;
+    const quantity = document.getElementById('quantity').value;
+    const activeTabId = $('.nav-link.active').attr('href');
+    const activeTabContent = $(activeTabId);
+    
+    // Create the shopping list item
+    const shoppingItem = document.createElement('div');
+    shoppingItem.classList.add('shopping-item');
+    
+    const shoppingItemContent = document.createElement('div');
+    shoppingItemContent.classList.add('shopping-item-content');
+    
+    const shoppingItemCheckbox = document.createElement('input');
+    shoppingItemCheckbox.type = 'checkbox';
+    shoppingItemCheckbox.classList.add('shopping-item-checkbox');
+    
+    const shoppingItemText = document.createElement('span');
+    shoppingItemText.classList.add('shopping-item-text');
+    shoppingItemText.innerText = customContent;
+
+    const shoppingItemQuantity = document.createElement('span');
+    shoppingItemQuantity.classList.add('shopping-item-quantity');
+    shoppingItemQuantity.innerText = ' x ' + quantity;
+    
+    const shoppingItemDelete = document.createElement('span');
+    shoppingItemDelete.classList.add('shopping-item-delete');
+    shoppingItemDelete.innerHTML = '&#x2715;'; // X symbol
+    
+    // Add event listener to delete the item when the delete button is clicked
+    shoppingItemDelete.addEventListener('click', function() {
+        shoppingItem.remove();
+    });
+    
+    // Append elements to the shopping item
+    shoppingItemContent.appendChild(shoppingItemCheckbox);
+    shoppingItemContent.appendChild(shoppingItemText);
+    shoppingItemContent.appendChild(shoppingItemQuantity);
+    shoppingItemContent.appendChild(shoppingItemDelete);
+    shoppingItem.appendChild(shoppingItemContent);
+    
+    // Append the shopping item to the active tab content
+    activeTabContent.append(shoppingItem);
+
+    // Clear the input box after updating the content
+    document.getElementById('customContent').value = '';
+    document.getElementById('quantity').value = '1';
+}
+
+
+function renameTab(tabLink) {
+    if (tabLink.classList.contains('active')) {
+        // Allow renaming only for the active tab
+        const tabText = tabLink.innerText;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = tabText;
+        input.addEventListener('blur', function() {
+            tabLink.innerText = this.value;
+        });
+        tabLink.innerText = '';
+        tabLink.appendChild(input);
+        input.focus();
+    }
+}
+
+function deleteTab() {
+    const activeTabId = $('.nav-link.active').attr('href');
+    if (activeTabId !== '#tab-1') {
+        removeTab(activeTabId.substring(1));
+    }
+}
+
+$(document).on('change', '.shopping-item-checkbox', function() {
+    const shoppingItem = $(this).closest('.shopping-item');
+    shoppingItem.toggleClass('checked', this.checked);
+    const shoppingItemText = shoppingItem.find('.shopping-item-text');
+    shoppingItemText.css('text-decoration', this.checked ? 'line-through' : 'none');
+});
+
+$(document).on('click', '.shopping-item-delete', function() {
+    const shoppingItem = $(this).closest('.shopping-item');
+    shoppingItem.remove();
+});
+</script>
+
+</body>
+</html>
